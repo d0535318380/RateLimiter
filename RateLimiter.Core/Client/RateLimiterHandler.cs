@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace RateLimiter.Core.Client;
@@ -44,8 +45,20 @@ public class RateLimiterHandler : IDisposable
             var result = await _client.GetAsync(clientId.ToString());
             var content = await result.Content.ReadAsStringAsync(token);
 
-            _logger.LogInformation("Client: {ClientId}, {StatusCode}, {Content}",
-                clientId, result.StatusCode, content);
+
+            switch (result.StatusCode)
+            {
+                case HttpStatusCode.ServiceUnavailable:
+                    _logger.LogError("Client: {ClientId}, {StatusCode}, {Content}",
+                        clientId, result.StatusCode, content);
+                    break;
+                
+                default:
+                    _logger.LogInformation("Client: {ClientId}, {StatusCode}, {Content}", 
+                        clientId, result.StatusCode, content);
+                    break;
+                    
+            }
         }
         catch (Exception ex)
         {

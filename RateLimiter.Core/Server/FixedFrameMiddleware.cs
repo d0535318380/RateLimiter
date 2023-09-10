@@ -40,7 +40,7 @@ public class FixedFrameMiddleware : IMiddleware, IDisposable
             return;
         }
 
-        _logger.LogWarning("Forbidden: {ClientId}.", clientId);
+        _logger.LogError("Forbidden: {ClientId}.", clientId);
         await WriteFailed(context, $"Forbidden: {clientId}");
     }
 
