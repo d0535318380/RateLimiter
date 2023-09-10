@@ -15,10 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Handlers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\RateLimiter.Core\RateLimiter.Core.csproj" />
     </ItemGroup>
 

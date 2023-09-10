@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace RateLimiter.Core.Server;
 
-public class FixedFrameMiddleware  : IMiddleware
+public class FixedFrameMiddleware : IMiddleware, IDisposable
 {
     private readonly ConcurrentDictionary<string, FixedFramePolicy> _polices = new(StringComparer.OrdinalIgnoreCase);
     private readonly FixedFramePolicyOptions _policySetting;
@@ -26,7 +26,7 @@ public class FixedFrameMiddleware  : IMiddleware
 
         if (!isClientIdExists)
         {
-            await WriteFailed(context, $"ClientId not provided: {clientId}");
+            await WriteFailed(context, $"ClientId not provided.");
             return;
         }
 
@@ -49,4 +49,16 @@ public class FixedFrameMiddleware  : IMiddleware
         context.Response.StatusCode = (int ) HttpStatusCode.ServiceUnavailable;
         await context.Response.WriteAsync(message);       
     }
-}
+
+    public void Dispose()
+    {
+        foreach (var policy in _polices.Values)
+        {
+            policy.Dispose();
+        }
+        
+        _polices.Clear();
+        
+        _logger.LogInformation("FixedFrameMiddleware disposed");
+    }
+} 

@@ -3,19 +3,20 @@
 public class FixedFramePolicy : IDisposable, IAsyncDisposable
 {
     private readonly object _syncRoot = new();
-    private int _requestCount = 0;
     private readonly FixedFramePolicyOptions _options;
     private readonly Timer _timer;
+    
+    private int _requestCount = 0;
     private bool _disposed;
 
     public FixedFramePolicy(FixedFramePolicyOptions options)
     {
         var period = TimeSpan.FromSeconds(options.FrameInSeconds);
         _options = options;
-        _timer = new Timer(Refresh, null, period, period);
+        _timer = new Timer(ElapseTimerCallback, null, period, period);
     }
 
-    private void Refresh(object? state)
+    private void ElapseTimerCallback(object? state)
     {
         if (_disposed)
         {

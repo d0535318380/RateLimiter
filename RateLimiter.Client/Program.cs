@@ -13,18 +13,11 @@ builder.Services.Configure<RateLimiterClientOptions>(config.GetSection(nameof(Ra
 
 builder.Services
     .AddRefitClient<IRateLimiterClient>()
-    .ConfigureHttpClient(x=>x.BaseAddress = new Uri("http://localhost:8080"));
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri("http://localhost:8080"));
 
 builder.Services
     .AddTransient<RateLimiterHandler>()
     .AddHostedService<RateLimiterService>();
-try
-{
-    var host = builder.Build();
-    host.Run();
-}
-catch (Exception e)
-{
-    Console.WriteLine(e);
-    throw;
-}
+
+var host = builder.Build();
+host.Run();
