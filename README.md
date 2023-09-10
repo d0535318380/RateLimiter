@@ -10,7 +10,7 @@
     Press Ctrl-C
 ````
 
-## Server configuration
+## Server configuration: appsettings.json
 ````json
 {
   "FixedFramePolicyOptions": {
@@ -20,7 +20,7 @@
 }
 ````
 
-## Client configuration
+## Client configuration: appsettings.json
 ````json
 {
   "RateLimiterClientOptions": {
