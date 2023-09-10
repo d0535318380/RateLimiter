@@ -9,14 +9,14 @@ namespace RateLimiter.Core.Server;
 public class FixedFrameMiddleware  : IMiddleware
 {
     private readonly ConcurrentDictionary<string, FixedFramePolicy> _polices = new(StringComparer.OrdinalIgnoreCase);
-    private readonly IOptions<FixedFramePolicyOptions> _policySetting;
+    private readonly FixedFramePolicyOptions _policySetting;
     private readonly ILogger<FixedFrameMiddleware> _logger;
 
     public FixedFrameMiddleware(
         IOptions<FixedFramePolicyOptions> policySetting, 
         ILogger<FixedFrameMiddleware> logger)
     {
-        _policySetting = policySetting;
+        _policySetting = policySetting.Value;
         _logger = logger;
     }
 
@@ -31,16 +31,16 @@ public class FixedFrameMiddleware  : IMiddleware
         }
 
         var policy = _polices.GetOrAdd($"client.{clientId}", 
-            _ => new FixedFramePolicy(_policySetting.Value));
+            _ => new FixedFramePolicy(_policySetting));
 
         if (policy.IsAcquire())
         {
-            _logger.LogInformation("{ClientId} - success..", clientId);
+            _logger.LogInformation("Success: {ClientId}.", clientId);
             await next(context);
             return;
         }
 
-        _logger.LogWarning("{ClientId} - forbidden..", clientId);
+        _logger.LogWarning("Forbidden: {ClientId}.", clientId);
         await WriteFailed(context, $"Forbidden: {clientId}");
     }
 

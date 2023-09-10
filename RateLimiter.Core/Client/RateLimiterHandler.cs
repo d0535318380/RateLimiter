@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 
 namespace RateLimiter.Core.Client;
+
 public class RateLimiterHandler : IDisposable
 {
     private readonly IRateLimiterClient _client;
@@ -12,7 +13,7 @@ public class RateLimiterHandler : IDisposable
 
     public RateLimiterHandler(
         IOptions<RateLimiterClientOptions> options,
-        IRateLimiterClient client, 
+        IRateLimiterClient client,
         ILogger<RateLimiterHandler> logger)
     {
         _client = client;
@@ -23,7 +24,7 @@ public class RateLimiterHandler : IDisposable
     public async Task ExecuteAsync(CancellationToken token)
     {
         _logger.LogInformation("RateLimiterClientHandler started");
-        
+
         while (!token.IsCancellationRequested)
         {
             var delay = _random.Next(100, _options.MaxIntervalSeconds * 1000);
@@ -31,7 +32,7 @@ public class RateLimiterHandler : IDisposable
             await ExecuteInternalAsync(token);
             await Task.Delay(TimeSpan.FromMilliseconds(delay), token);
         }
-        
+
         _logger.LogInformation("RateLimiterClientHandler finished");
     }
 
@@ -42,15 +43,14 @@ public class RateLimiterHandler : IDisposable
             var clientId = _random.Next(1, _options.ClientCount);
             var result = await _client.GetAsync(clientId.ToString());
             var content = await result.Content.ReadAsStringAsync(token);
-            
-            _logger.LogInformation("Client: {ClientId}, {StatusCode}: {Content}", 
+
+            _logger.LogInformation("Client: {ClientId}, {StatusCode}, {Content}",
                 clientId, result.StatusCode, content);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Request failed");
         }
-        
     }
 
     public void Dispose()

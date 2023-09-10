@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using RateLimiter.Core;
 using RateLimiter.Core.Server;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RateLimiter.Core.Server;
 
 namespace RateLimiter.Core.Client;
 public class RateLimiterService : BackgroundService 
@@ -38,7 +37,7 @@ public class RateLimiterService : BackgroundService
 
     private IEnumerable<RateLimiterHandler> CreateHandlers()
     {
-        for (int i = 0; i < _options.ClientCount; i++)
+        for (var i = 0; i < _options.ClientCount; i++)
         {
             yield return _provider.GetRequiredService<RateLimiterHandler>();
         }
